@@ -30,3 +30,6 @@ Linux codespaces-00c5c6 6.8.0-1030-azure #35~22.04.1-Ubuntu SMP Mon May 26 18:08
 - [x] https://www.figma.com/design/dHJ2b4wyvVWtXH3PVkBMhd/Simple-Social-Media-Application--Community-?node-id=1-62&t=uvdYiranFNTrDT7d-4
 - [x] https://www.figma.com/design/dHJ2b4wyvVWtXH3PVkBMhd/Simple-Social-Media-Application--Community-?node-id=1-47&t=uvdYiranFNTrDT7d-4
 - [x] https://www.figma.com/design/dHJ2b4wyvVWtXH3PVkBMhd/Simple-Social-Media-Application--Community-?node-id=1-54&t=uvdYiranFNTrDT7d-4
+
+## Java
+

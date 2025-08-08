@@ -1,7 +1,7 @@
 import os
 import datetime
 import yaml
-from fastapi import FastAPI, Depends, HTTPException, status, Path
+from fastapi import FastAPI, Depends, HTTPException, status, Path, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
 from fastapi.responses import HTMLResponse
@@ -15,12 +15,16 @@ from typing import List, Optional
 
 
 # FastAPI 앱 생성 (기본 docs, redoc 비활성화)
+
 app = FastAPI(
     docs_url=None,
     redoc_url=None,
     openapi_url="/openapi.json",
     title="Simple Social Media API",
 )
+
+# APIRouter 생성
+router = APIRouter()
 
 # CORS 전체 허용
 app.add_middleware(
@@ -54,8 +58,7 @@ def get_db():
         db.close()
 
 # -------------------- 게시물(Posts) 엔드포인트 --------------------
-# 게시물 목록 조회
-@app.get("/posts", response_model=List[Post], tags=["Posts"])
+@router.get("/posts", response_model=List[Post], tags=["Posts"])
 def list_posts(db: Session = Depends(get_db)):
     posts = db.query(PostModel).all()
     result = []
@@ -67,8 +70,7 @@ def list_posts(db: Session = Depends(get_db)):
         result.append(Post(**post_data))
     return result
 
-# 게시물 생성
-@app.post("/posts", response_model=Post, status_code=201, tags=["Posts"])
+@router.post("/posts", response_model=Post, status_code=201, tags=["Posts"])
 def create_post(req: PostCreateRequest, db: Session = Depends(get_db)):
     post_id = str(uuid.uuid4())
     now = db.bind.dialect.default_schema_name  # dummy, will fix
@@ -93,8 +95,7 @@ def create_post(req: PostCreateRequest, db: Session = Depends(get_db)):
         likesCount=post.likesCount
     )
 
-# 단일 게시물 조회
-@app.get("/posts/{postId}", response_model=Post, tags=["Posts"])
+@router.get("/posts/{postId}", response_model=Post, tags=["Posts"])
 def get_post(postId: str = Path(...), db: Session = Depends(get_db)):
     post = db.query(PostModel).filter(PostModel.id == postId).first()
     if not post:
@@ -105,8 +106,7 @@ def get_post(postId: str = Path(...), db: Session = Depends(get_db)):
     post_data["comments"] = comment_objs
     return Post(**post_data)
 
-# 게시물 업데이트
-@app.patch("/posts/{postId}", response_model=Post, tags=["Posts"])
+@router.patch("/posts/{postId}", response_model=Post, tags=["Posts"])
 def update_post(postId: str, req: PostUpdateRequest, db: Session = Depends(get_db)):
     post = db.query(PostModel).filter(PostModel.id == postId).first()
     if not post:
@@ -126,8 +126,7 @@ def update_post(postId: str, req: PostUpdateRequest, db: Session = Depends(get_d
         likesCount=post.likesCount
     )
 
-# 게시물 삭제
-@app.delete("/posts/{postId}", status_code=204, tags=["Posts"])
+@router.delete("/posts/{postId}", status_code=204, tags=["Posts"])
 def delete_post(postId: str, db: Session = Depends(get_db)):
     post = db.query(PostModel).filter(PostModel.id == postId).first()
     if not post:
@@ -137,8 +136,7 @@ def delete_post(postId: str, db: Session = Depends(get_db)):
     return None
 
 # -------------------- 댓글(Comments) 엔드포인트 --------------------
-# 게시물의 댓글 목록 조회
-@app.get("/posts/{postId}/comments", response_model=List[Comment], tags=["Comments"])
+@router.get("/posts/{postId}/comments", response_model=List[Comment], tags=["Comments"])
 def list_comments(postId: str, db: Session = Depends(get_db)):
     post = db.query(PostModel).filter(PostModel.id == postId).first()
     if not post:
@@ -153,8 +151,7 @@ def list_comments(postId: str, db: Session = Depends(get_db)):
         updatedAt=c.updatedAt
     ) for c in comments]
 
-# 댓글 생성
-@app.post("/posts/{postId}/comments", response_model=Comment, status_code=201, tags=["Comments"])
+@router.post("/posts/{postId}/comments", response_model=Comment, status_code=201, tags=["Comments"])
 def create_comment(postId: str, req: CommentCreateRequest, db: Session = Depends(get_db)):
     post = db.query(PostModel).filter(PostModel.id == postId).first()
     if not post:
@@ -180,8 +177,7 @@ def create_comment(postId: str, req: CommentCreateRequest, db: Session = Depends
         updatedAt=comment.updatedAt
     )
 
-# 특정 댓글 조회
-@app.get("/posts/{postId}/comments/{commentId}", response_model=Comment, tags=["Comments"])
+@router.get("/posts/{postId}/comments/{commentId}", response_model=Comment, tags=["Comments"])
 def get_comment(postId: str, commentId: str, db: Session = Depends(get_db)):
     comment = db.query(CommentModel).filter(CommentModel.id == commentId, CommentModel.postId == postId).first()
     if not comment:
@@ -195,8 +191,7 @@ def get_comment(postId: str, commentId: str, db: Session = Depends(get_db)):
         updatedAt=comment.updatedAt
     )
 
-# 댓글 업데이트
-@app.patch("/posts/{postId}/comments/{commentId}", response_model=Comment, tags=["Comments"])
+@router.patch("/posts/{postId}/comments/{commentId}", response_model=Comment, tags=["Comments"])
 def update_comment(postId: str, commentId: str, req: CommentUpdateRequest, db: Session = Depends(get_db)):
     comment = db.query(CommentModel).filter(CommentModel.id == commentId, CommentModel.postId == postId).first()
     if not comment:
@@ -215,8 +210,7 @@ def update_comment(postId: str, commentId: str, req: CommentUpdateRequest, db: S
         updatedAt=comment.updatedAt
     )
 
-# 댓글 삭제
-@app.delete("/posts/{postId}/comments/{commentId}", status_code=204, tags=["Comments"])
+@router.delete("/posts/{postId}/comments/{commentId}", status_code=204, tags=["Comments"])
 def delete_comment(postId: str, commentId: str, db: Session = Depends(get_db)):
     comment = db.query(CommentModel).filter(CommentModel.id == commentId, CommentModel.postId == postId).first()
     if not comment:
@@ -226,8 +220,7 @@ def delete_comment(postId: str, commentId: str, db: Session = Depends(get_db)):
     return None
 
 # -------------------- 좋아요(Likes) 엔드포인트 --------------------
-# 게시물 좋아요
-@app.post("/posts/{postId}/likes", status_code=201, tags=["Likes"])
+@router.post("/posts/{postId}/likes", status_code=201, tags=["Likes"])
 def like_post(postId: str, req: LikeRequest, db: Session = Depends(get_db)):
     post = db.query(PostModel).filter(PostModel.id == postId).first()
     if not post:
@@ -242,8 +235,7 @@ def like_post(postId: str, req: LikeRequest, db: Session = Depends(get_db)):
     db.commit()
     return {"message": "좋아요 성공"}
 
-# 게시물 좋아요 취소
-@app.delete("/posts/{postId}/likes", status_code=204, tags=["Likes"])
+@router.delete("/posts/{postId}/likes", status_code=204, tags=["Likes"])
 def unlike_post(postId: str, req: LikeRequest, db: Session = Depends(get_db)):
     post = db.query(PostModel).filter(PostModel.id == postId).first()
     if not post:
@@ -256,11 +248,16 @@ def unlike_post(postId: str, req: LikeRequest, db: Session = Depends(get_db)):
     db.commit()
     return None
 
+
 # openapi.yaml 경로
 OPENAPI_YAML_PATH = os.path.join(os.path.dirname(__file__), "../openapi.yaml")
+
 
 # openapi.yaml 파싱
 def load_openapi_yaml():
     with open(OPENAPI_YAML_PATH, encoding="utf-8") as f:
         return yaml.safe_load(f)
+
+# 라우터 등록 (/api prefix)
+app.include_router(router, prefix="/api")
 

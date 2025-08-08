@@ -61,8 +61,9 @@ def list_posts(db: Session = Depends(get_db)):
     result = []
     for post in posts:
         comments = db.query(CommentModel).filter(CommentModel.postId == post.id).all()
+        comment_objs = [Comment.from_orm(c) for c in comments]
         post_data = Post.from_orm(post).dict()
-        post_data["comments"] = [CommentModel.__table__.columns.keys() for c in comments]  # dummy, will fix
+        post_data["comments"] = comment_objs
         result.append(Post(**post_data))
     return result
 
@@ -99,15 +100,10 @@ def get_post(postId: str = Path(...), db: Session = Depends(get_db)):
     if not post:
         raise HTTPException(status_code=404, detail="게시물을 찾을 수 없습니다.")
     comments = db.query(CommentModel).filter(CommentModel.postId == post.id).all()
-    return Post(
-        id=post.id,
-        username=post.username,
-        content=post.content,
-        createdAt=post.createdAt,
-        updatedAt=post.updatedAt,
-        comments=[],  # 추후 구현
-        likesCount=post.likesCount
-    )
+    comment_objs = [Comment.from_orm(c) for c in comments]
+    post_data = Post.from_orm(post).dict()
+    post_data["comments"] = comment_objs
+    return Post(**post_data)
 
 # 게시물 업데이트
 @app.patch("/posts/{postId}", response_model=Post, tags=["Posts"])

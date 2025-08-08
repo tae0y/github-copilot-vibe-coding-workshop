@@ -1,0 +1,516 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "Simple Social Media API",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8080",
+            "description": "Generated server url"
+        }
+    ],
+    "paths": {
+        "/api/posts": {
+            "get": {
+                "tags": [
+                    "post-controller"
+                ],
+                "operationId": "listPosts",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/PostDTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "post-controller"
+                ],
+                "operationId": "createPost",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PostCreateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PostDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/posts/{postId}/likes": {
+            "post": {
+                "tags": [
+                    "post-controller"
+                ],
+                "operationId": "likePost",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LikeRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "post-controller"
+                ],
+                "operationId": "unlikePost",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LikeRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            }
+        },
+        "/api/posts/{postId}/comments": {
+            "get": {
+                "tags": [
+                    "post-controller"
+                ],
+                "operationId": "listComments",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/CommentDTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "post-controller"
+                ],
+                "operationId": "createComment",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CommentCreateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommentDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/posts/{postId}": {
+            "get": {
+                "tags": [
+                    "post-controller"
+                ],
+                "operationId": "getPost",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PostDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "post-controller"
+                ],
+                "operationId": "deletePost",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "post-controller"
+                ],
+                "operationId": "updatePost",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PostUpdateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PostDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/posts/{postId}/comments/{commentId}": {
+            "get": {
+                "tags": [
+                    "post-controller"
+                ],
+                "operationId": "getComment",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "commentId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommentDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "post-controller"
+                ],
+                "operationId": "deleteComment",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "commentId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "post-controller"
+                ],
+                "operationId": "updateComment",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "commentId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CommentUpdateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommentDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "PostCreateRequest": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string"
+                    },
+                    "content": {
+                        "type": "string"
+                    }
+                }
+            },
+            "CommentDTO": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "postId": {
+                        "type": "string"
+                    },
+                    "username": {
+                        "type": "string"
+                    },
+                    "content": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "PostDTO": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "username": {
+                        "type": "string"
+                    },
+                    "content": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "comments": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CommentDTO"
+                        }
+                    },
+                    "likesCount": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            },
+            "LikeRequest": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string"
+                    }
+                }
+            },
+            "CommentCreateRequest": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string"
+                    },
+                    "content": {
+                        "type": "string"
+                    }
+                }
+            },
+            "PostUpdateRequest": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string"
+                    },
+                    "content": {
+                        "type": "string"
+                    }
+                }
+            },
+            "CommentUpdateRequest": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string"
+                    },
+                    "content": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}

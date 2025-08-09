@@ -69,7 +69,7 @@
 		}
 		catch (Exception ex)
 		{
-			error = "An error occurred while loading posts.";
+			error = $"An error occurred while loading posts.\n{ex.Message}";
 		}
 		finally
 		{
